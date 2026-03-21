@@ -1,0 +1,180 @@
+
+# ============================================================
+# PetroSafe Energia - RAG Enterprise Platform
+# Docker Compose - Infraestrutura Base (Sprints 2-4)
+# ============================================================
+
+services:
+  # ── Camada de Dados ──────────────────────────────────────
+  minio:
+    image: minio/minio:RELEASE.2024-01-01T16-36-33Z
+    container_name: petrosafe-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-petrosafe}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-petrosafe123}
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - petrosafe-net
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: petrosafe-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set local http://minio:9000 $${MINIO_ROOT_USER:-petrosafe} $${MINIO_ROOT_PASSWORD:-petrosafe123};
+        mc mb --ignore-existing local/bronze;
+        mc mb --ignore-existing local/silver;
+        mc mb --ignore-existing local/gold;
+        mc mb --ignore-existing local/raw;
+        mc version enable local/bronze;
+        mc version enable local/silver;
+        mc version enable local/gold;
+        echo 'Buckets Medallion criados com versionamento habilitado';
+      "
+    networks:
+      - petrosafe-net
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: petrosafe-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-petrosafe}
+      POSTGRES_USER: ${POSTGRES_USER:-petrosafe}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-petrosafe123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U petrosafe"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - petrosafe-net
+
+  # ── Banco Vetorial ───────────────────────────────────────
+  milvus-etcd:
+    image: quay.io/coreos/etcd:v3.5.11
+    container_name: petrosafe-etcd
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+      ETCD_SNAPSHOT_COUNT: "50000"
+    volumes:
+      - etcd_data:/etcd
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - petrosafe-net
+
+  milvus-minio:
+    image: minio/minio:RELEASE.2024-01-01T16-36-33Z
+    container_name: petrosafe-milvus-minio
+    command: server /data --console-address ":9011"
+    ports:
+      - "9010:9000"
+      - "9011:9011"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - milvus_minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - petrosafe-net
+
+  milvus:
+    image: milvusdb/milvus:v2.3.4
+    container_name: petrosafe-milvus
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: milvus-etcd:2379
+      MINIO_ADDRESS: milvus-minio:9000
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    depends_on:
+      milvus-etcd:
+        condition: service_healthy
+      milvus-minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - milvus_data:/var/lib/milvus
+    networks:
+      - petrosafe-net
+
+  # ── Camada de MLOps ─────────────────────────────────────
+  mlflow:
+    image: petrosafe-mlflow:custom
+    container_name: petrosafe-mlflow
+    command: >
+      mlflow server
+        --host 0.0.0.0
+        --port 5000
+        --backend-store-uri postgresql://petrosafe:petrosafe123@postgres:5432/petrosafe
+        --default-artifact-root s3://gold/mlflow-artifacts
+    ports:
+      - "5000:5000"
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-petrosafe}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-petrosafe123}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - petrosafe-net
+
+  # ── Camada de IA ─────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: petrosafe-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - petrosafe-net
+
+volumes:
+  minio_data:
+  postgres_data:
+  etcd_data:
+  milvus_minio_data:
+  milvus_data:
+  ollama_data:
+
+networks:
+  petrosafe-net:
+    driver: bridge

@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+.venv/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (não versionar dados locais)
+data/bronze/*
+data/silver/*
+data/gold/*
+!data/bronze/.gitkeep
+!data/silver/.gitkeep
+!data/gold/.gitkeep
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
+
+# MLflow
+mlruns/
+
+# Jupyter
+.ipynb_checkpoints/
