@@ -83,7 +83,8 @@ Engenheiros de confiabilidade da PetroSafe precisam:
 
 ```bash
 # 1. Clonar repositório
-git clone <repo-url>
+git clone https://github.com/S-Lucas1/PetroSafe-Energia-RAG.git
+
 cd rag-platform
 
 # 2. Copiar variáveis de ambiente
@@ -209,15 +210,15 @@ rag-platform/
 
 ---
 
-## 👥 Equipe Scrum
+## 👥 Equipe
 
-| Papel | Responsabilidade |
-|---|---|
-| Product Owner | Define prioridades e aceita entregas |
-| Scrum Master | Facilita cerimônias e remove impedimentos |
-| Dev Team - Backend | Pipelines, API, infraestrutura |
-| Dev Team - Data | Governança, pipelines Medallion, metadados |
-| Dev Team - IA | RAG pipeline, embeddings, LLM |
+| Papel | Responsabilidade | Integrante 
+|---|---| --- |
+| Product Owner | Define prioridades e aceita entregas | Lucas Carvalho de Souza |
+| Scrum Master | Facilita cerimônias e remove impedimentos | Yasmin de Oliveira Teixeira |
+| Dev Team - Backend | Pipelines, API, infraestrutura | Ricardo Leporo Holtz |
+| Dev Team - Data | Governança, pipelines Medallion, metadados | Matheus Francisco Telini Maldonado,  Gabriel Amadio de Lima| 
+| Dev Team - IA | RAG pipeline, embeddings, LLM | Lucas Miranda, Pedro Fescina |
 
 ---
 
