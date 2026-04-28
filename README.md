@@ -214,22 +214,30 @@ rag-platform/
 
 | Papel | Responsabilidade | Integrante 
 |---|---| --- |
-| Product Owner | Define prioridades e aceita entregas | Lucas Carvalho de Souza |
-| Scrum Master | Facilita cerimônias e remove impedimentos | Yasmin de Oliveira Teixeira |
-| Dev Team - Backend | Pipelines, API, infraestrutura | Ricardo Leporo Holtz |
-| Dev Team - Data | Governança, pipelines Medallion, metadados | Matheus Francisco Telini Maldonado,  Gabriel Amadio de Lima| 
-| Dev Team - IA | RAG pipeline, embeddings, LLM | Lucas Miranda, Pedro Fescina |
+| Product Owner | Define prioridades e aceita entregas | Lucas Carvalho de Souza - 212169 |
+| Scrum Master | Facilita cerimônias e remove impedimentos | Yasmin de Oliveira Teixeira - 212183 |
+| Dev Team - Backend | Pipelines, API, infraestrutura | Ricardo Leporo Holtz - 212064, Breno de Pádua Soares - 222500, João Pedro de Oliveira Grangeiro - 222507 |
+| Dev Team - Data | Governança, pipelines Medallion, metadados | Matheus Francisco Telini Maldonado - 222253,  Gabriel Amadio de Lima - 190099, Felipe Bettoni - 214365, | 
+| Dev Team - IA | RAG pipeline, embeddings, LLM | Lucas Miranda - 223350, Pedro Henrique Fescina Almeida - 223348, Guilherme Grossi de Almeida - 222707, Sergio Samuel Godinho Sandes - 211989 |
 
 ---
 
-## 📅 Sprints (Primeira Entrega)
+## 📅 Sprints ( Separado por Entrega)
 
 | Sprint | Foco | Status |
 |---|---|---|
-| Sprint 1 | Definição do Produto | ✅ Concluída |
-| Sprint 2 | Arquitetura e Infraestrutura Base | ✅ Concluída |
-| Sprint 3 | Governança e Medallion | ✅ Concluída |
-| Sprint 4 | Modelagem de Metadados | ✅ Concluída |
+| AC1 - Sprint 1 | Definição do Produto | ✅ Concluída |
+| AC1 - Sprint 2 | Arquitetura e Infraestrutura Base | ✅ Concluída |
+| AC1 - Sprint 3 | Governança e Medallion | ✅ Concluída |
+| AC1 - Sprint 4 | Modelagem e Treinamento de Modelos (ML + MLflow) | ✅ Concluída |
+| AC2 - Sprint 5 | Pipeline de Embeddings | Em Andamento |
+| AC2 - Sprint 6 | Construção do RAG Core | Não Iniciada |
+| AC2 - Sprint 7 | API | Não Iniciada |
+| AF - Sprint 8 | Interface | Não Iniciada |
+| AF - Sprint 9 | MLflow e Avaliação | Não Iniciada |
+| AF - Sprint 10 | Automação | Não Iniciada |
+| AF - Sprint 11 | Validação, Avaliação e Preparação do Pitch | Não Iniciada |
+| AF - Sprint 12 | Validação, Avaliação e Preparação do Pitch | Não Iniciada |
 
 ---
 
