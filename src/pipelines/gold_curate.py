@@ -11,6 +11,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+import io
 import pandas as pd
 import structlog
 
@@ -56,7 +57,7 @@ class GoldCuratePipeline:
         try:
             # Ler dados Silver
             raw_data = self.datalake.download("silver", silver_path)
-            df = pd.read_parquet(pd.io.common.BytesIO(raw_data))
+            df = pd.read_parquet(io.BytesIO(raw_data))
 
             # ── Enriquecimento ──────────────────────────────
             # Identificar colunas de sensores (numéricas)

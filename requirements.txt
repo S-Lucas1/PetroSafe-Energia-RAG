@@ -16,6 +16,12 @@ pymilvus==2.3.6
 # MLOps
 mlflow==2.10.0
 
+# ML / Modelagem
+scikit-learn
+xgboost
+matplotlib
+seaborn
+
 # LLM / Embeddings
 ollama
 langchain

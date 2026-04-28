@@ -12,6 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
+import io
 import pandas as pd
 import structlog
 
@@ -59,7 +60,7 @@ class SilverTransformPipeline:
         try:
             # Ler dados de Bronze
             raw_data = self.datalake.download("bronze", bronze_path)
-            df = pd.read_csv(pd.io.common.BytesIO(raw_data))
+            df = pd.read_csv(io.BytesIO(raw_data))
 
             registros_originais = len(df)
             metricas = {"registros_originais": registros_originais}
@@ -114,7 +115,9 @@ class SilverTransformPipeline:
             metricas["registros_rejeitados"] = registros_originais - registros_finais
 
             # ── Salvar em Silver (formato Parquet) ──────────
-            parquet_buffer = df.to_parquet(index=False)
+            buf = io.BytesIO()
+            df.to_parquet(buf, index=False)
+            parquet_buffer = buf.getvalue()
             nome_arquivo = Path(bronze_path).stem + ".parquet"
             silver_path = f"{dataset_nome}/{self.timestamp}/{nome_arquivo}"
 

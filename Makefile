@@ -120,6 +120,20 @@ gold: ## Executa pipeline Gold (curadoria)
 pipeline-all: bronze silver gold ## Executa pipeline completo (Bronze → Silver → Gold)
 	@echo "$(GREEN)✓ Pipeline Medallion completo$(NC)"
 
+# ── ML / Treinamento ───────────────────────────────────────
+train: ## Treina modelos e registra no MLflow
+	@echo "$(CYAN)▶ Treinando modelos de classificação...$(NC)"
+	$(PYTHON) -m src.models.train
+	@echo "$(GREEN)✓ Treinamento concluído - verifique http://localhost:5000$(NC)"
+
+evaluate: ## Avalia melhor modelo
+	@echo "$(CYAN)▶ Avaliando melhor modelo...$(NC)"
+	$(PYTHON) -m src.models.evaluate
+	@echo "$(GREEN)✓ Avaliação concluída$(NC)"
+
+train-all: train evaluate ## Pipeline completo (treino + avaliação)
+	@echo "$(GREEN)✓ Pipeline ML completo$(NC)"
+
 # ── Ollama / LLM ──────────────────────────────────────────
 pull-model: ## Baixa modelo LLM no Ollama
 	@echo "$(CYAN)▶ Baixando modelo llama3.2:3b...$(NC)"

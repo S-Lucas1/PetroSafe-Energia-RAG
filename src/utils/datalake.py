@@ -61,7 +61,11 @@ class DataLakeClient:
             "x-amz-meta-camada": camada,
         }
         if metadata:
-            meta.update({f"x-amz-meta-{k}": str(v) for k, v in metadata.items()})
+            import unicodedata
+            def _clean(s):
+                s = unicodedata.normalize("NFKD", str(s)).encode("ascii", "ignore").decode("ascii")
+                return "".join(ch if ch.isprintable() and ord(ch) < 128 else "_" for ch in s)
+            meta.update({f"x-amz-meta-{k}": _clean(v) for k, v in metadata.items()})
 
         result = self.client.put_object(
             bucket_name=camada,

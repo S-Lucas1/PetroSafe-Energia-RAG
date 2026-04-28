@@ -3,6 +3,7 @@ PetroSafe Energia - Cliente de Metadados (PostgreSQL)
 Gerencia catálogo de datasets, versionamento e linhagem.
 """
 
+import json
 import uuid
 from datetime import datetime
 from typing import Optional
@@ -57,7 +58,7 @@ class MetadataClient:
                          tamanho_bytes, num_registros, checksum_md5, metadados_qualidade)
                     VALUES
                         (:id, :dataset_id, :versao, :camada, :caminho_minio, :minio_version_id,
-                         :tamanho_bytes, :num_registros, :checksum_md5, :metadados_qualidade::jsonb)
+                         :tamanho_bytes, :num_registros, :checksum_md5, CAST(:metadados_qualidade AS jsonb))
                 """),
                 {
                     "id": versao_id,
@@ -69,7 +70,7 @@ class MetadataClient:
                     "tamanho_bytes": tamanho_bytes,
                     "num_registros": num_registros,
                     "checksum_md5": checksum_md5,
-                    "metadados_qualidade": str(metadados_qualidade) if metadados_qualidade else None,
+                    "metadados_qualidade": json.dumps(metadados_qualidade) if metadados_qualidade else None,
                 },
             )
             session.commit()
