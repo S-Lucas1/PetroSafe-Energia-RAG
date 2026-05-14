@@ -15,6 +15,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "petrosafe123"
 os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5000"
 
 import json
+import pickle
 import sys
 from pathlib import Path
 
@@ -38,8 +39,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import xgboost as xgb
 import mlflow
-import mlflow.sklearn
-import mlflow.xgboost
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -156,7 +155,6 @@ def definir_modelos() -> dict:
                 "solver": "lbfgs",
             },
             "usa_scaled": True,
-            "log_fn": mlflow.sklearn.log_model,
         },
         "Random Forest": {
             "model": RandomForestClassifier(
@@ -172,7 +170,6 @@ def definir_modelos() -> dict:
                 "class_weight": "balanced",
             },
             "usa_scaled": False,
-            "log_fn": mlflow.sklearn.log_model,
         },
         "XGBoost": {
             "model": xgb.XGBClassifier(
@@ -192,7 +189,6 @@ def definir_modelos() -> dict:
                 "tree_method": "hist",
             },
             "usa_scaled": False,
-            "log_fn": mlflow.sklearn.log_model,
         },
     }
 
@@ -248,9 +244,12 @@ def treinar_e_avaliar(
         mlflow.log_artifact(str(cm_path))
         mlflow.log_artifact(str(cr_path))
 
-        # Logar modelo
-        artifact_name = nome.lower().replace(" ", "_") + "_model"
-        config["log_fn"](model, artifact_path=artifact_name)
+        # Logar modelo como pickle (compatível com mlflow 2.x e 3.x)
+        artifact_name = nome.lower().replace(" ", "_") + "_model.pkl"
+        model_path = artifacts_dir / artifact_name
+        with open(model_path, "wb") as f:
+            pickle.dump(model, f)
+        mlflow.log_artifact(str(model_path))
 
         return {
             "nome": nome,

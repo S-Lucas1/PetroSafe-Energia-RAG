@@ -6,6 +6,9 @@
 .PHONY: help up down restart logs status clean \
         init-buckets db-shell db-migrate \
         bronze silver gold pipeline-all \
+        train evaluate train-all \
+        pull-model pull-embedding \
+        embed rag-query api api-docs \
         test lint format
 
 # ── Variáveis ──────────────────────────────────────────────
@@ -144,6 +147,26 @@ pull-embedding: ## Baixa modelo de embedding
 	@echo "$(CYAN)▶ Baixando modelo nomic-embed-text...$(NC)"
 	docker exec petrosafe-ollama ollama pull nomic-embed-text
 	@echo "$(GREEN)✓ Modelo de embedding baixado$(NC)"
+
+# ── Sprint 5: Embeddings ───────────────────────────────────
+embed: ## Gera embeddings e indexa no Milvus
+	@echo "$(CYAN)▶ Executando pipeline de embeddings...$(NC)"
+	$(PYTHON) -m src.pipelines.embedding_pipeline
+	@echo "$(GREEN)✓ Embeddings gerados e indexados$(NC)"
+
+# ── Sprint 6: RAG ──────────────────────────────────────────
+rag-query: ## Consulta RAG interativa
+	@echo "$(CYAN)▶ Iniciando RAG query...$(NC)"
+	$(PYTHON) -m src.pipelines.rag_query $(QUERY)
+
+# ── Sprint 7: API ──────────────────────────────────────────
+api: ## Inicia a API FastAPI (porta 8000)
+	@echo "$(CYAN)▶ Iniciando API PetroSafe na porta 8000...$(NC)"
+	$(PYTHON) -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+api-docs: ## Abre docs da API no navegador
+	@echo "$(CYAN)▶ Abrindo Swagger UI...$(NC)"
+	@xdg-open http://localhost:8000/docs 2>/dev/null || echo "  Acesse: http://localhost:8000/docs"
 
 # ── Qualidade ──────────────────────────────────────────────
 test: ## Roda testes

@@ -1,7 +1,7 @@
 [
   {
     "nome": "Logistic Regression",
-    "run_id": "46a46e568b034aecbceea93cf8c8f6d8",
+    "run_id": "a349d498178948afa95a0c8a3680d0c0",
     "accuracy": 0.21,
     "f1_macro": 0.23754199532837303,
     "precision_macro": 0.26247795414462083,
@@ -9,7 +9,7 @@
   },
   {
     "nome": "Random Forest",
-    "run_id": "23e1e8155c2d41dbb10c1e26984e9c7a",
+    "run_id": "b56b6b6514c34f4a9bc323aa3729d7be",
     "accuracy": 0.62,
     "f1_macro": 0.2739793501941839,
     "precision_macro": 0.2737335036185611,
@@ -17,7 +17,7 @@
   },
   {
     "nome": "XGBoost",
-    "run_id": "3c87c5dbd00b45f3a2e96d1514a17ca5",
+    "run_id": "f163d91f67e74fdfaf0147b3938a8596",
     "accuracy": 0.59,
     "f1_macro": 0.26450782333135275,
     "precision_macro": 0.25212620027434846,

@@ -101,14 +101,62 @@ make status
 
 ```bash
 make help           # Lista todos os comandos disponíveis
-make up             # Inicia todos os serviços
-make up-core        # Inicia apenas MinIO + PostgreSQL
+make up             # Inicia todos os serviços Docker
 make down           # Para todos os serviços
 make status         # Status dos serviços
 make db-shell       # Abre shell PostgreSQL
 make db-check       # Verifica schema do banco
-make pipeline-all   # Executa pipeline completo (Bronze → Silver → Gold)
+
+# Pipelines de dados
+make pipeline-all   # Bronze → Silver → Gold
+make train          # Treina modelos ML (Sprint 4)
+
+# Sprint 5 — Embeddings
+make pull-embedding # Baixa modelo nomic-embed-text
+make embed          # Chunking + embeddings + indexação no Milvus
+
+# Sprint 6 — RAG
+make rag-query      # Consulta RAG interativa (QUERY="sua pergunta")
+
+# Sprint 7 — API
+make api            # Inicia API FastAPI na porta 8000
+make api-docs       # Abre Swagger UI no navegador
+
 make clean          # Remove containers e volumes
+```
+
+### Uso do RAG
+
+```bash
+# Modo CLI — argumento direto
+python3 -m src.pipelines.rag_query "Quais falhas BSW foram detectadas?"
+
+# Modo CLI — interativo
+python3 -m src.pipelines.rag_query
+
+# Via API (após make api)
+curl -X POST http://localhost:8000/query \
+  -H "Content-Type: application/json" \
+  -d '{"question": "O que é uma falha BSW?", "top_k": 5}'
+```
+
+### Uso da API
+
+```bash
+# Health check
+curl http://localhost:8000/health
+
+# Catálogo de datasets
+curl http://localhost:8000/metadata/datasets
+
+# Versões por camada
+curl http://localhost:8000/metadata/versions
+
+# Linhagem de dados
+curl http://localhost:8000/metadata/lineage
+
+# Swagger UI interativo
+# Acesse: http://localhost:8000/docs
 ```
 
 ### URLs dos Serviços
@@ -120,7 +168,8 @@ make clean          # Remove containers e volumes
 | MLflow | http://localhost:5000 |
 | Milvus | localhost:19530 |
 | Ollama | http://localhost:11434 |
-| API (futuro) | http://localhost:8000 |
+| **API RAG** | **http://localhost:8000** |
+| **Swagger UI** | **http://localhost:8000/docs** |
 
 ---
 

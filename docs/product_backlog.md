@@ -1,7 +1,7 @@
 # 📋 Product Backlog — PetroSafe Energia
 
 > Plataforma RAG Enterprise com Governança de Dados
-> Última atualização: Sprint 4
+> Última atualização: Sprint 7 (AC2)
 
 ---
 
@@ -139,30 +139,80 @@
 
 ---
 
-## Backlog Futuro (Sprints 5+)
+## Sprint 5 — Pipeline de Embeddings ✅
+
+| ID | User Story | Prioridade | Pontos | Status |
+|----|-----------|-----------|--------|--------|
+| US28 | Como eng. IA, quero pipeline de chunking de documentos Gold para chunks de 500 tokens | Must | 8 | ✅ Done |
+| US29 | Como eng. IA, quero geração de embeddings com Ollama (nomic-embed-text 768d) | Must | 8 | ✅ Done |
+| US30 | Como eng. IA, quero indexação de embeddings no Milvus com índice IVF_FLAT COSINE | Must | 5 | ✅ Done |
+| US31 | Como eng. IA, quero retry com backoff no cliente de embeddings | Should | 3 | ✅ Done |
+
+**Velocity Sprint 5:** 24 pontos
+
+### Entregáveis Sprint 5
+- `src/utils/embedding.py` — cliente Ollama nomic-embed-text (768d)
+- `src/utils/milvus_client.py` — cliente Milvus com collection `petrosafe_documents`
+- `src/pipelines/embedding_pipeline.py` — Gold → chunks → embeddings → Milvus
+- 33 chunks indexados de 9 documentos RAG
+- Busca por similaridade testada (COSINE, IVF_FLAT, nlist=128)
+
+---
+
+## Sprint 6 — Construção do RAG Core ✅
+
+| ID | User Story | Prioridade | Pontos | Status |
+|----|-----------|-----------|--------|--------|
+| US32 | Como eng. IA, quero pipeline de retrieval vetorial (top_k documentos similares) | Must | 8 | ✅ Done |
+| US33 | Como eng. IA, quero integração com Ollama llama3.2:3b para geração de respostas | Must | 8 | ✅ Done |
+| US34 | Como eng. IA, quero prompt engineering com contexto e instrução de grounding | Must | 5 | ✅ Done |
+| US35 | Como eng. IA, quero CLI interativa para consultas RAG com tempos de resposta | Should | 3 | ✅ Done |
+
+**Velocity Sprint 6:** 24 pontos
+
+### Entregáveis Sprint 6
+- `src/pipelines/rag_pipeline.py` — query → embedding → Milvus → prompt → Ollama
+- `src/pipelines/rag_query.py` — CLI com modo argumento e modo interativo
+- Resposta estruturada: texto + fontes + tempos (retrieval_ms, geração_ms)
+- Template de prompt com grounding no contexto
+
+---
+
+## Sprint 7 — API FastAPI ✅
+
+| ID | User Story | Prioridade | Pontos | Status |
+|----|-----------|-----------|--------|--------|
+| US36 | Como dev, quero endpoint POST /query que chama o RAG pipeline | Must | 8 | ✅ Done |
+| US37 | Como dev, quero endpoints GET /metadata/* para catálogo e linhagem | Must | 5 | ✅ Done |
+| US38 | Como dev, quero endpoint GET /health verificando todos os serviços | Must | 3 | ✅ Done |
+| US39 | Como dev, quero Swagger UI automático com todos os endpoints documentados | Must | 2 | ✅ Done |
+| US40 | Como dev, quero CORS habilitado na API | Should | 1 | ✅ Done |
+
+**Velocity Sprint 7:** 19 pontos
+
+### Entregáveis Sprint 7
+- `src/api/main.py` — FastAPI com 5 endpoints + CORS + Swagger
+- `src/api/models.py` — modelos Pydantic de request/response
+- `docs/api_contract.md` — contrato completo com exemplos curl
+- Swagger UI: http://localhost:8000/docs
+
+---
+
+## Backlog Futuro (Sprints 8+)
 
 | ID | User Story | Épico | Prioridade | Pontos |
 |----|-----------|-------|-----------|--------|
-| US28 | Como eng. IA, quero pipeline de chunking de documentos | E3 | Must | 8 |
-| US29 | Como eng. IA, quero geração de embeddings com Ollama | E3 | Must | 8 |
-| US30 | Como eng. IA, quero indexação de embeddings no Milvus | E3 | Must | 5 |
-| US31 | Como eng. IA, quero pipeline de busca vetorial (retrieval) | E3 | Must | 8 |
-| US32 | Como eng. IA, quero integração com Ollama para geração de respostas | E4 | Must | 8 |
-| US33 | Como eng. IA, quero prompt engineering otimizado para o domínio | E4 | Should | 5 |
-| US34 | Como dev, quero API FastAPI com endpoints de consulta RAG | E5 | Must | 8 |
-| US35 | Como dev, quero documentação OpenAPI da API | E5 | Must | 3 |
-| US36 | Como dev, quero interface Gradio para consultas | E5 | Must | 5 |
-| US37 | Como eng. MLOps, quero tracking de experimentos RAG no MLflow | E6 | Should | 5 |
-| US38 | Como eng. MLOps, quero métricas de avaliação do RAG | E6 | Should | 5 |
-| US39 | Como PO, quero demonstração final ponta a ponta | — | Must | 3 |
+| US41 | Como usuário, quero interface Gradio para consultas visuais | E5 | Must | 5 |
+| US42 | Como eng. MLOps, quero tracking de avaliação do RAG no MLflow | E6 | Should | 5 |
+| US43 | Como PO, quero demonstração final ponta a ponta para o professor | — | Must | 3 |
 
 ---
 
 ## Métricas do Projeto
 
-| Métrica | Sprint 1 | Sprint 2 | Sprint 3 | Sprint 4 | Total |
-|---------|----------|----------|----------|----------|-------|
-| Pontos Planejados | 18 | 28 | 37 | 37 | 120 |
-| Pontos Entregues | 18 | 28 | 37 | 37 | 120 |
-| User Stories | 6 | 6 | 7 | 8 | 27 |
-| Velocity Média | — | — | — | — | 30 |
+| Métrica | Sprint 1 | Sprint 2 | Sprint 3 | Sprint 4 | Sprint 5 | Sprint 6 | Sprint 7 | Total |
+|---------|----------|----------|----------|----------|----------|----------|----------|-------|
+| Pontos Planejados | 18 | 28 | 37 | 37 | 24 | 24 | 19 | 187 |
+| Pontos Entregues | 18 | 28 | 37 | 37 | 24 | 24 | 19 | 187 |
+| User Stories | 6 | 6 | 7 | 8 | 4 | 4 | 5 | 40 |
+| Velocity Média | — | — | — | — | — | — | — | 27 |
