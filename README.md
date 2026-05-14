@@ -301,23 +301,6 @@ rag-platform/
 
 ---
 
-## 🔐 Como fazer Push para o GitHub
-
-```bash
-# 1. Configure seu token como credencial permanente
-git config --global credential.helper store
-
-# 2. Faça o push (pedirá usuário e token uma única vez)
-git push origin main
-# Username: S-Lucas1
-# Password: <SEU_PERSONAL_ACCESS_TOKEN>
-```
-
-> Para gerar o token: GitHub → Settings → Developer settings →
-> Personal access tokens → Tokens (classic) → New token → marcar `repo`
-
----
-
 ## 📄 Licença
 
 Projeto acadêmico — uso educacional.
