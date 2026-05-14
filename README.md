@@ -183,35 +183,46 @@ rag-platform/
 ├── .env                        # Variáveis de ambiente
 ├── .gitignore
 │
-├── docs/                       # Documentação
+├── docs/
 │   ├── arquitetura.md          # Documentação arquitetural
 │   ├── governanca.md           # Política de governança de dados
-│   ├── product_backlog.md      # Product Backlog (Scrum)
-│   └── decisoes_tecnicas.md    # Justificativas técnicas
+│   ├── product_backlog.md      # Product Backlog com Sprints 1-7
+│   ├── decisoes_tecnicas.md    # Justificativas técnicas
+│   ├── modelagem_ml.md         # Documentação ML (Sprint 4)
+│   └── api_contract.md         # Contrato da API com exemplos curl (Sprint 7)
 │
 ├── scripts/
 │   └── init-db.sql             # Schema PostgreSQL (metadados + auditoria)
 │
 ├── src/
-│   ├── api/                    # FastAPI endpoints
+│   ├── api/
+│   │   ├── main.py             # FastAPI — 5 endpoints + CORS + Swagger (Sprint 7)
+│   │   └── models.py           # Pydantic models request/response (Sprint 7)
 │   ├── pipelines/
-│   │   ├── bronze_ingestion.py # Pipeline Bronze (ingestão)
-│   │   ├── silver_transform.py # Pipeline Silver (transformação)
-│   │   └── gold_curate.py      # Pipeline Gold (curadoria)
-│   ├── models/                 # Modelos de dados
+│   │   ├── bronze_ingestion.py # Pipeline Bronze — CSV → MinIO
+│   │   ├── silver_transform.py # Pipeline Silver — limpeza → Parquet
+│   │   ├── gold_curate.py      # Pipeline Gold — curadoria → JSON RAG
+│   │   ├── embedding_pipeline.py # Sprint 5 — Gold → chunks → Milvus
+│   │   ├── rag_pipeline.py     # Sprint 6 — RAG core (retrieval + geração)
+│   │   └── rag_query.py        # Sprint 6 — CLI interativa
+│   ├── models/
+│   │   ├── train.py            # Sprint 4 — Logistic/RandomForest/XGBoost + MLflow
+│   │   └── evaluate.py         # Sprint 4 — Avaliação do melhor modelo
 │   └── utils/
-│       ├── config.py           # Configurações centralizadas
-│       ├── datalake.py         # Cliente MinIO
-│       └── metadata.py         # Cliente PostgreSQL (metadados)
+│       ├── config.py           # Pydantic Settings centralizadas
+│       ├── datalake.py         # Cliente MinIO (upload/download/list)
+│       ├── metadata.py         # Cliente PostgreSQL (catálogo + linhagem)
+│       ├── embedding.py        # Sprint 5 — EmbeddingClient (nomic-embed-text, retry)
+│       └── milvus_client.py    # Sprint 5 — MilvusClient (IVF_FLAT COSINE 768d)
 │
-├── data/                       # Dados locais (não versionado)
-│   ├── bronze/
-│   ├── silver/
-│   └── gold/
+├── data/
+│   └── raw/
+│       ├── poco_A1_sensores.csv  # Dataset sintético 500 registros, 9 colunas
+│       └── poco_tipo*_3w.csv     # CSVs por tipo de falha (3W Petrobras)
 │
-├── configs/                    # Configurações adicionais
-├── tests/                      # Testes automatizados
-└── frontend/                   # Interface Gradio
+├── artifacts/                  # Matrizes de confusão, classification reports
+├── tests/
+└── frontend/                   # Interface Gradio (Sprint 8)
 ```
 
 ---
@@ -279,14 +290,31 @@ rag-platform/
 | AC1 - Sprint 2 | Arquitetura e Infraestrutura Base | ✅ Concluída |
 | AC1 - Sprint 3 | Governança e Medallion | ✅ Concluída |
 | AC1 - Sprint 4 | Modelagem e Treinamento de Modelos (ML + MLflow) | ✅ Concluída |
-| AC2 - Sprint 5 | Pipeline de Embeddings | Em Andamento |
-| AC2 - Sprint 6 | Construção do RAG Core | Não Iniciada |
-| AC2 - Sprint 7 | API | Não Iniciada |
+| AC2 - Sprint 5 | Pipeline de Embeddings (nomic-embed-text + Milvus) | ✅ Concluída |
+| AC2 - Sprint 6 | Construção do RAG Core (llama3.2:3b + retrieval) | ✅ Concluída |
+| AC2 - Sprint 7 | API FastAPI (5 endpoints + Swagger UI) | ✅ Concluída |
 | AF - Sprint 8 | Interface | Não Iniciada |
 | AF - Sprint 9 | MLflow e Avaliação | Não Iniciada |
 | AF - Sprint 10 | Automação | Não Iniciada |
 | AF - Sprint 11 | Validação, Avaliação e Preparação do Pitch | Não Iniciada |
 | AF - Sprint 12 | Validação, Avaliação e Preparação do Pitch | Não Iniciada |
+
+---
+
+## 🔐 Como fazer Push para o GitHub
+
+```bash
+# 1. Configure seu token como credencial permanente
+git config --global credential.helper store
+
+# 2. Faça o push (pedirá usuário e token uma única vez)
+git push origin main
+# Username: S-Lucas1
+# Password: <SEU_PERSONAL_ACCESS_TOKEN>
+```
+
+> Para gerar o token: GitHub → Settings → Developer settings →
+> Personal access tokens → Tokens (classic) → New token → marcar `repo`
 
 ---
 
